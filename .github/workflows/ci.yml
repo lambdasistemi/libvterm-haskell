@@ -11,7 +11,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-gate:
+    name: Build Gate
     runs-on: nixos
     steps:
       - uses: actions/checkout@v4
