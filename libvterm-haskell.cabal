@@ -1,0 +1,82 @@
+cabal-version:   3.4
+name:            libvterm-haskell
+version:         0.1.0.0
+synopsis:        Haskell FFI bindings to libvterm terminal emulator
+description:
+  FFI bindings to libvterm (neovim fork), a VT220/xterm/ECMA-48
+  terminal emulator library. Provides a Haskell interface to create
+  virtual terminals, feed them byte streams, and read back the
+  resulting character grid with full color and attribute information.
+
+license:         MIT
+license-file:    LICENSE
+author:          paolino
+maintainer:      paolo.veronelli@gmail.com
+homepage:        https://github.com/lambdasistemi/libvterm-haskell
+bug-reports:     https://github.com/lambdasistemi/libvterm-haskell/issues
+category:        System, FFI, Terminal
+build-type:      Simple
+tested-with:     GHC ==9.8.4
+extra-doc-files: README.md
+
+source-repository head
+  type:     git
+  location: https://github.com/lambdasistemi/libvterm-haskell
+
+flag werror
+  description: Enable -Werror
+  manual:      True
+  default:     False
+
+common warnings
+  ghc-options:
+    -Wall -Wunused-imports -Wunused-packages -Wmissing-export-lists
+    -Wname-shadowing -Wredundant-constraints
+
+  if flag(werror)
+    ghc-options: -Werror
+
+library
+  import:             warnings
+  exposed-modules:
+    System.Terminal.LibVTerm
+    System.Terminal.LibVTerm.Keyboard
+    System.Terminal.LibVTerm.Screen
+    System.Terminal.LibVTerm.Types
+
+  other-modules:
+    Paths_libvterm_haskell
+    System.Terminal.LibVTerm.Raw
+
+  autogen-modules:    Paths_libvterm_haskell
+  build-depends:
+    , base          >=4.17 && <5
+    , bytestring    >=0.11 && <0.13
+    , text          >=2.0  && <2.2
+    , transformers  >=0.6  && <0.7
+
+  c-sources:          cbits/helpers.c
+  include-dirs:       cbits
+  extra-libraries:    vterm
+  hs-source-dirs:     src
+  default-language:   GHC2021
+  default-extensions:
+    DerivingStrategies
+    LambdaCase
+    OverloadedStrings
+    StrictData
+
+test-suite unit-tests
+  import:             warnings
+  type:               exitcode-stdio-1.0
+  main-is:            Main.hs
+  build-depends:
+    , base              >=4.17 && <5
+    , bytestring        >=0.11 && <0.13
+    , hspec             >=2.11 && <2.12
+    , libvterm-haskell
+
+  hs-source-dirs:     test
+  default-language:   GHC2021
+  default-extensions: OverloadedStrings
+  build-tool-depends: hspec-discover:hspec-discover
